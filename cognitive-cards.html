@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>认知书房 · CogniShelf</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1208;
+    --parchment: #f5efe3;
+    --parchment-dark: #ede4d0;
+    --gold: #c9a84c;
+    --gold-light: #e8c96a;
+    --gold-dim: #8a6f2e;
+    --rust: #9b4a2a;
+    --sage: #4a6741;
+    --slate: #3d4a5c;
+    --cream: #faf6ed;
+    --shadow: rgba(26,18,8,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #16120c;
+    color: var(--ink);
+    font-family: 'Noto Serif SC', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.4;
+  }
+
+  /* ── HEADER ── */
+  .site-header {
+    background: linear-gradient(180deg, #1e1810 0%, #16120c 100%);
+    border-bottom: 1px solid var(--gold-dim);
+    padding: 0 5vw;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  .logo-zh {
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: var(--gold);
+    letter-spacing: 0.15em;
+  }
+
+  .logo-en {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--gold-dim);
+    letter-spacing: 0.05em;
+  }
+
+  .header-nav {
+    display: flex;
+    gap: 28px;
+    list-style: none;
+  }
+
+  .header-nav a {
+    color: #a8956a;
+    text-decoration: none;
+    font-size: 0.82rem;
+    letter-spacing: 0.12em;
+    transition: color 0.2s;
+  }
+
+  .header-nav a:hover, .header-nav a.active { color: var(--gold); }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(160deg, #1e1810 0%, #1a1510 50%, #13100b 100%);
+    padding: 80px 5vw 70px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  }
+
+  .hero-ornament {
+    color: var(--gold-dim);
+    font-size: 1rem;
+    letter-spacing: 0.6em;
+    opacity: 0.7;
+    margin-bottom: 20px;
+    animation: fadeIn 1s ease both;
+  }
+
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    color: var(--parchment);
+    line-height: 1.15;
+    margin-bottom: 14px;
+    animation: riseUp 0.9s ease both 0.1s;
+  }
+
+  .hero h1 em {
+    color: var(--gold);
+    font-style: italic;
+  }
+
+  .hero-sub {
+    color: #8a7a5a;
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    margin-bottom: 40px;
+    animation: riseUp 0.9s ease both 0.25s;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    animation: riseUp 0.9s ease both 0.4s;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--gold) 0%, #a8782a 100%);
+    color: #1a1208;
+    border: none;
+    padding: 12px 28px;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    transition: all 0.2s;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(201,168,76,0.3);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--gold-dim);
+    border: 1px solid var(--gold-dim);
+    padding: 12px 28px;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 0.88rem;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    transition: all 0.2s;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  }
+
+  .btn-ghost:hover { color: var(--gold); border-color: var(--gold); }
+
+  /* ── MAIN LAYOUT ── */
+  .main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 48px 5vw;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #2e2518;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    color: var(--gold);
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-title::before {
+    content: '§';
+    color: var(--gold-dim);
+    font-size: 0.9em;
+  }
+
+  .section-link {
+    color: var(--gold-dim);
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .section-link:hover { color: var(--gold); }
+
+  /* ── BOOK SHELF ── */
+  .book-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+    margin-bottom: 60px;
+  }
+
+  .book-card {
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s;
+    animation: fadeIn 0.6s ease both;
+  }
+
+  .book-card:hover { transform: translateY(-6px) rotate(1deg); }
+
+  .book-spine {
+    height: 220px;
+    border-radius: 2px 8px 8px 2px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: -4px 4px 20px rgba(0,0,0,0.6), inset -2px 0 6px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: flex-end;
+    padding: 16px 14px;
+  }
+
+  .book-spine::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 12px;
+    background: rgba(0,0,0,0.3);
+    border-right: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .book-info { position: relative; z-index: 1; }
+
+  .book-title {
+    color: rgba(255,255,255,0.92);
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 4px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  }
+
+  .book-author {
+    color: rgba(255,255,255,0.55);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+  }
+
+  .book-tag {
+    position: absolute;
+    top: 12px;
+    right: 10px;
+    background: rgba(0,0,0,0.5);
+    color: var(--gold);
+    font-size: 0.6rem;
+    padding: 2px 7px;
+    border: 1px solid rgba(201,168,76,0.3);
+    letter-spacing: 0.1em;
+    border-radius: 2px;
+  }
+
+  .book-progress {
+    height: 3px;
+    background: rgba(201,168,76,0.2);
+    margin-top: 8px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .book-progress-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 2px;
+    transition: width 1s ease;
+  }
+
+  /* ── CANVAS / MIND MAP ── */
+  .canvas-section { margin-bottom: 60px; }
+
+  .canvas-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: -1px;
+  }
+
+  .canvas-tab {
+    padding: 9px 20px;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    color: #5a4e36;
+    border: 1px solid #2e2518;
+    border-bottom: none;
+    cursor: pointer;
+    background: #13100b;
+    transition: all 0.2s;
+    font-family: 'Noto Serif SC', serif;
+  }
+
+  .canvas-tab.active {
+    color: var(--gold);
+    background: #1e1a12;
+    border-color: #3d3220;
+    border-bottom: 1px solid #1e1a12;
+    margin-bottom: -1px;
+    z-index: 1;
+    position: relative;
+  }
+
+  .canvas-body {
+    background: #1e1a12;
+    border: 1px solid #3d3220;
+    padding: 32px;
+    border-radius: 0 4px 4px 4px;
+    min-height: 360px;
+  }
+
+  .canvas-title {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    color: var(--parchment);
+    font-size: 1.4rem;
+    margin-bottom: 6px;
+  }
+
+  .canvas-subtitle {
+    color: var(--gold-dim);
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 28px;
+  }
+
+  .canvas-nodes {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    position: relative;
+  }
+
+  .canvas-center {
+    background: linear-gradient(135deg, #2e2215 0%, #241c11 100%);
+    border: 1px solid var(--gold-dim);
+    border-radius: 4px;
+    padding: 16px 20px;
+    text-align: center;
+    margin-bottom: 16px;
+    position: relative;
+  }
+
+  .canvas-center::after {
+    content: '';
+    position: absolute;
+    bottom: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 16px;
+    background: var(--gold-dim);
+  }
+
+  .canvas-center-text {
+    color: var(--gold);
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.06em;
+  }
+
+  .canvas-branches {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    position: relative;
+  }
+
+  .canvas-branches::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 16%; right: 16%;
+    height: 1px;
+    background: var(--gold-dim);
+    opacity: 0.5;
+  }
+
+  .branch-node {
+    background: #1a1610;
+    border: 1px solid #3a2e1a;
+    border-radius: 4px;
+    padding: 14px 16px;
+    position: relative;
+    transition: border-color 0.2s, transform 0.2s;
+    cursor: pointer;
+  }
+
+  .branch-node:hover {
+    border-color: var(--gold-dim);
+    transform: translateY(-2px);
+  }
+
+  .branch-node::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 14px;
+    background: var(--gold-dim);
+    opacity: 0.4;
+  }
+
+  .branch-number {
+    color: var(--gold-dim);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    margin-bottom: 6px;
+    font-family: 'Playfair Display', serif;
+  }
+
+  .branch-title {
+    color: var(--parchment);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .branch-desc {
+    color: #6e6048;
+    font-size: 0.75rem;
+    line-height: 1.6;
+  }
+
+  .branch-tag {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 2px 8px;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    border-radius: 2px;
+  }
+
+  /* ── COGNITIVE CARDS ── */
+  .cards-section { margin-bottom: 60px; }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  .cog-card {
+    background: var(--parchment);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    animation: fadeIn 0.6s ease both;
+  }
+
+  .cog-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  }
+
+  .cog-card-accent {
+    height: 4px;
+    background: var(--gold);
+  }
+
+  .cog-card.type-rust .cog-card-accent { background: var(--rust); }
+  .cog-card.type-sage .cog-card-accent { background: var(--sage); }
+  .cog-card.type-slate .cog-card-accent { background: var(--slate); }
+
+  .cog-card-body {
+    padding: 22px 22px 16px;
+  }
+
+  .cog-card-source {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .cog-card-book {
+    font-size: 0.7rem;
+    color: #7a6845;
+    letter-spacing: 0.08em;
+  }
+
+  .cog-card-chapter {
+    font-size: 0.65rem;
+    color: #a89a7a;
+    padding: 2px 7px;
+    border: 1px solid #d5c4a0;
+    border-radius: 2px;
+  }
+
+  .cog-card-quote {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    line-height: 1.65;
+    color: #2a1e0e;
+    margin-bottom: 14px;
+    padding-left: 14px;
+    border-left: 3px solid var(--gold);
+  }
+
+  .cog-card.type-rust .cog-card-quote { border-left-color: var(--rust); }
+  .cog-card.type-sage .cog-card-quote { border-left-color: var(--sage); }
+  .cog-card.type-slate .cog-card-quote { border-left-color: var(--slate); }
+
+  .cog-card-insight {
+    font-size: 0.8rem;
+    color: #5a4a30;
+    line-height: 1.7;
+    padding: 10px 12px;
+    background: rgba(201,168,76,0.1);
+    border-radius: 2px;
+    border-left: 2px solid rgba(201,168,76,0.4);
+  }
+
+  .cog-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 22px;
+    background: var(--parchment-dark);
+    border-top: 1px solid #ddd0b0;
+  }
+
+  .cog-card-tag {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    color: #7a6845;
+  }
+
+  .cog-card-actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  .action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: transform 0.15s;
+    color: #8a7855;
+    padding: 2px;
+  }
+
+  .action-btn:hover { transform: scale(1.2); }
+  .action-btn.saved { color: var(--gold); }
+
+  /* ── DAILY CARD ── */
+  .daily-section { margin-bottom: 60px; }
+
+  .daily-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 20px;
+    align-items: start;
+  }
+
+  .daily-card {
+    background: linear-gradient(145deg, #2a1e0e 0%, #1e1608 100%);
+    border: 1px solid var(--gold-dim);
+    border-radius: 4px;
+    padding: 36px;
+    position: relative;
+    overflow: hidden;
+    min-height: 260px;
+  }
+
+  .daily-card::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .daily-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--gold-dim);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+
+  .daily-label::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 1px;
+    background: var(--gold-dim);
+  }
+
+  .daily-quote {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+    color: var(--parchment);
+    line-height: 1.55;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .daily-quote::before {
+    content: '\201C';
+    font-family: 'Playfair Display', serif;
+    font-size: 5rem;
+    color: rgba(201,168,76,0.12);
+    position: absolute;
+    top: -20px;
+    left: -10px;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .daily-meta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .daily-book {
+    color: var(--gold);
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+  }
+
+  .daily-author { color: #6e6048; font-size: 0.75rem; }
+
+  .checkin-panel {
+    background: #1a1610;
+    border: 1px solid #3a2e1a;
+    border-radius: 4px;
+    padding: 24px;
+  }
+
+  .checkin-title {
+    color: var(--gold);
+    font-size: 0.82rem;
+    letter-spacing: 0.12em;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .streak-display {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: #13100b;
+    border-radius: 4px;
+    border: 1px solid #2e2518;
+  }
+
+  .streak-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    color: var(--gold);
+    line-height: 1;
+    display: block;
+  }
+
+  .streak-label { color: #6e6048; font-size: 0.72rem; letter-spacing: 0.1em; }
+
+  .mini-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-bottom: 18px;
+  }
+
+  .cal-day {
+    aspect-ratio: 1;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    color: #3a3020;
+    background: #13100b;
+    border: 1px solid #2a2014;
+  }
+
+  .cal-day.done {
+    background: rgba(201,168,76,0.2);
+    border-color: var(--gold-dim);
+    color: var(--gold);
+  }
+
+  .cal-day.today {
+    background: var(--gold);
+    color: #1a1208;
+    font-weight: 700;
+  }
+
+  .checkin-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--gold) 0%, #a8782a 100%);
+    color: #1a1208;
+    border: none;
+    padding: 12px;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+
+  .checkin-btn:hover { box-shadow: 0 4px 16px rgba(201,168,76,0.35); }
+  .checkin-btn:active { transform: scale(0.98); }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,8,4,0.85);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal {
+    background: #1e1a12;
+    border: 1px solid var(--gold-dim);
+    border-radius: 4px;
+    width: 90%;
+    max-width: 640px;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 36px;
+    transform: translateY(16px);
+    transition: transform 0.3s;
+    position: relative;
+  }
+
+  .modal-overlay.open .modal { transform: translateY(0); }
+
+  .modal-close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: var(--gold-dim);
+    font-size: 1.4rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+
+  .modal-close:hover { color: var(--gold); }
+
+  .modal-book-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    color: var(--parchment);
+    margin-bottom: 4px;
+  }
+
+  .modal-book-meta {
+    color: var(--gold-dim);
+    font-size: 0.78rem;
+    margin-bottom: 24px;
+    letter-spacing: 0.08em;
+  }
+
+  .modal-canvas-list { list-style: none; }
+
+  .modal-canvas-item {
+    padding: 16px 0;
+    border-bottom: 1px solid #2e2518;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    cursor: pointer;
+    transition: padding-left 0.2s;
+  }
+
+  .modal-canvas-item:hover { padding-left: 8px; }
+
+  .modal-canvas-item:last-child { border-bottom: none; }
+
+  .modal-canvas-num {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.4rem;
+    color: var(--gold-dim);
+    min-width: 32px;
+    line-height: 1;
+    padding-top: 2px;
+  }
+
+  .modal-canvas-text h4 {
+    color: var(--gold);
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+
+  .modal-canvas-text p {
+    color: #7a6848;
+    font-size: 0.8rem;
+    line-height: 1.6;
+  }
+
+  /* ── ADD BOOK FORM ── */
+  .add-form {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    padding-top: 20px;
+    border-top: 1px solid #2e2518;
+  }
+
+  .form-input {
+    flex: 1;
+    background: #13100b;
+    border: 1px solid #3a2e1a;
+    color: var(--parchment);
+    padding: 10px 14px;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 0.82rem;
+    border-radius: 2px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-input::placeholder { color: #3a3020; }
+  .form-input:focus { border-color: var(--gold-dim); }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: #2a2215;
+    color: var(--gold);
+    border: 1px solid var(--gold-dim);
+    padding: 10px 22px;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    border-radius: 2px;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 300;
+    pointer-events: none;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes riseUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── FOOTER ── */
+  .site-footer {
+    border-top: 1px solid #2e2518;
+    padding: 24px 5vw;
+    text-align: center;
+    color: #3a3020;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .daily-wrapper { grid-template-columns: 1fr; }
+    .canvas-branches { grid-template-columns: 1fr; }
+    .book-grid { grid-template-columns: repeat(3, 1fr); }
+    .canvas-branches::before { display: none; }
+    .branch-node::before { display: none; }
+    .header-nav { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header class="site-header">
+  <a class="logo" href="#">
+    <span class="logo-zh">认知书房</span>
+    <span class="logo-en">CogniShelf</span>
+  </a>
+  <nav>
+    <ul class="header-nav">
+      <li><a href="#" class="active">书架</a></li>
+      <li><a href="#">认知画布</a></li>
+      <li><a href="#">每日卡片</a></li>
+      <li><a href="#">我的收藏</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-ornament">— 把书读薄 · 把认知变现 —</div>
+  <h1>一本好书，<em>五张画布</em>，<br>胜过千行笔记</h1>
+  <p class="hero-sub">书籍精华拆解 · 每日认知打卡 · 一键生成可分享卡片</p>
+  <div class="hero-actions">
+    <button class="btn-primary" onclick="openModal('book1')">开始拆解第一本书</button>
+    <button class="btn-ghost" onclick="scrollToSection('daily')">查看今日认知卡片</button>
+  </div>
+</section>
+
+<!-- ── MAIN ── -->
+<main class="main">
+
+  <!-- 书架 -->
+  <div class="section-header">
+    <h2 class="section-title">我的书架</h2>
+    <span class="section-link" onclick="showToast('📚 添加新书功能即将上线')">+ 添加书籍</span>
+  </div>
+
+  <div class="book-grid" id="bookGrid">
+    <!-- JS rendered -->
+  </div>
+
+  <!-- 认知画布 -->
+  <div class="canvas-section">
+    <div class="section-header">
+      <h2 class="section-title">认知画布</h2>
+      <span class="section-link" onclick="showToast('✨ 可切换不同书籍的画布')">查看全部</span>
+    </div>
+
+    <div class="canvas-tabs" id="canvasTabs"></div>
+    <div class="canvas-body" id="canvasBody"></div>
+  </div>
+
+  <!-- 每日认知卡片 -->
+  <div class="daily-section" id="daily">
+    <div class="section-header">
+      <h2 class="section-title">今日认知卡片</h2>
+      <span class="section-link" onclick="rotateDaily()">换一张 ↻</span>
+    </div>
+
+    <div class="daily-wrapper">
+      <div class="daily-card" id="dailyCard">
+        <div class="daily-label">Today's Insight · <span id="todayDate"></span></div>
+        <p class="daily-quote" id="dailyQuote"></p>
+        <div class="daily-meta">
+          <span class="daily-book" id="dailyBook"></span>
+          <span class="daily-author" id="dailyAuthor"></span>
+        </div>
+      </div>
+
+      <div class="checkin-panel">
+        <div class="checkin-title">🔥 连续打卡</div>
+        <div class="streak-display">
+          <span class="streak-number" id="streakNum">7</span>
+          <span class="streak-label">DAYS · 本周全勤</span>
+        </div>
+        <div class="mini-calendar" id="miniCal"></div>
+        <button class="checkin-btn" onclick="doCheckin()">✓ 今日打卡</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 认知卡片精选 -->
+  <div class="cards-section">
+    <div class="section-header">
+      <h2 class="section-title">精选认知卡片</h2>
+      <span class="section-link" onclick="showToast('❤️ 已收藏的卡片')">我的收藏</span>
+    </div>
+    <div class="cards-grid" id="cardsGrid"></div>
+  </div>
+
+</main>
+
+<!-- ── MODAL ── -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModal(null, true)">×</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<!-- ── TOAST ── -->
+<div class="toast" id="toast"></div>
+
+<!-- ── FOOTER ── -->
+<footer class="site-footer">
+  认知书房 CogniShelf · 把知识变成你的竞争力 · 2025
+</footer>
+
+<script>
+// ── DATA ──
+const BOOKS = [
+  { id:'book1', title:'思考，快与慢', author:'丹尼尔·卡尼曼', tag:'心理学', color:'linear-gradient(160deg,#2d1e0f,#4a2e10)', progress:85 },
+  { id:'book2', title:'道德经', author:'老子', tag:'哲学', color:'linear-gradient(160deg,#0f2d1e,#1a4a30)', progress:60 },
+  { id:'book3', title:'原则', author:'瑞·达利欧', tag:'方法论', color:'linear-gradient(160deg,#1a1f2d,#2a304a)', progress:40 },
+  { id:'book4', title:'人类简史', author:'尤瓦尔·赫拉利', tag:'历史', color:'linear-gradient(160deg,#2d1a1a,#4a2020)', progress:20 },
+  { id:'book5', title:'穷查理宝典', author:'查理·芒格', tag:'商业', color:'linear-gradient(160deg,#1e1a0f,#3a3010)', progress:70 },
+  { id:'book6', title:'被讨厌的勇气', author:'岸见一郎', tag:'哲学', color:'linear-gradient(160deg,#1a1a2d,#28284a)', progress:95 },
+];
+
+const CANVASES = {
+  book1: {
+    title: '思考，快与慢',
+    subtitle: '认知画布 · 五大核心洞见 · 丹尼尔·卡尼曼',
+    center: '人类决策的底层逻辑',
+    branches: [
+      { num:'01', title:'系统一 vs 系统二', desc:'快思考（直觉、自动）与慢思考（理性、费力）的永恒博弈', tag:'核心模型', tagColor:'#c9a84c' },
+      { num:'02', title:'认知偏误地图', desc:'锚定效应、可得性启发、光环效应——我们如何系统性地犯错', tag:'偏误清单', tagColor:'#9b4a2a' },
+      { num:'03', title:'前景理论', desc:'损失的痛苦是收益喜悦的两倍，这决定了所有经济行为', tag:'行为经济', tagColor:'#4a6741' },
+      { num:'04', title:'峰终定律', desc:'我们记住的不是平均体验，而是高峰和结尾', tag:'记忆偏差', tagColor:'#3d4a5c' },
+      { num:'05', title:'统计直觉的失灵', desc:'为什么受过教育的人仍然无法正确理解概率与基准率', tag:'认知盲区', tagColor:'#6a3d5c' },
+    ]
+  },
+  book2: {
+    title: '道德经',
+    subtitle: '认知画布 · 五大核心洞见 · 老子',
+    center: '无为而无不为',
+    branches: [
+      { num:'一', title:'道可道，非常道', desc:'语言触碰不到终极实在，命名即是遮蔽', tag:'本体论', tagColor:'#4a6741' },
+      { num:'二', title:'反者道之动', desc:'一切事物运动的方向都是回归本源，极则反', tag:'辩证法', tagColor:'#c9a84c' },
+      { num:'三', title:'上善若水', desc:'最高的善像水一样，利万物而不争，处众人之所恶', tag:'处世', tagColor:'#3d4a5c' },
+      { num:'四', title:'知足者富', desc:'欲望是匮乏的根源，满足感来自内在而非外求', tag:'财富观', tagColor:'#9b4a2a' },
+      { num:'五', title:'为学日益，为道日损', desc:'积累知识靠加法，领悟智慧靠减法', tag:'认识论', tagColor:'#6a3d5c' },
+    ]
+  },
+  book3: {
+    title: '原则',
+    subtitle: '认知画布 · 五大核心洞见 · 瑞·达利欧',
+    center: '极度求真·极度透明',
+    branches: [
+      { num:'01', title:'拥抱现实', desc:'不管现实多残酷，面对它比逃避它永远更有效', tag:'生活原则', tagColor:'#3d4a5c' },
+      { num:'02', title:'进化机器', desc:'痛苦＋反思＝进步，把挫败视作学习的数据', tag:'成长模型', tagColor:'#c9a84c' },
+      { num:'03', title:'可信度加权', desc:'不是所有人的意见都同等重要，建立可信度矩阵', tag:'决策框架', tagColor:'#4a6741' },
+      { num:'04', title:'棒球卡思维', desc:'将人的优缺点客观量化，用于团队匹配而非评判', tag:'用人', tagColor:'#9b4a2a' },
+      { num:'05', title:'高于自我的目标', desc:'当你为比自己更大的事物工作，个人局限就会消失', tag:'意义感', tagColor:'#6a3d5c' },
+    ]
+  }
+};
+
+const DAILY_INSIGHTS = [
+  { quote:'当你无法解释一件事的时候，最好的解释往往是：你的直觉系统一在悄悄运作，而你误以为那是理性。', book:'思考，快与慢', author:'卡尼曼' },
+  { quote:'知人者智，自知者明。胜人者有力，自胜者强。', book:'道德经', author:'老子' },
+  { quote:'痛苦加上反思等于进步。大多数人逃避痛苦，所以他们停止了进步。', book:'原则', author:'达利欧' },
+  { quote:'我们不是在体验生命，而是在体验对生命的记忆。', book:'思考，快与慢', author:'卡尼曼' },
+  { quote:'为学日益，为道日损。损之又损，以至於無為。無為而無不為。', book:'道德经', author:'老子' },
+  { quote:'所有成功者都有一个共同点：他们的失败次数比普通人多得多。', book:'原则', author:'达利欧' },
+];
+
+const CARDS = [
+  { type:'', book:'思考，快与慢', chapter:'第四章', quote:'我们对自己的判断有一种令人不安的自信，而这种自信几乎不受证据的约束。', insight:'💡 对抗过度自信的方法：在做重要决策前，主动寻找反对自己的证据，称为"事前验尸法"。', tag:'认知偏误 · 过度自信' },
+  { type:'type-rust', book:'道德经', chapter:'第八章', quote:'上善若水。水善利萬物而不爭，處衆人之所惡，故幾於道。', insight:'💡 竞争优势往往来自去对手不愿去的地方——填补空白比正面竞争更高效。', tag:'处世智慧 · 反竞争' },
+  { type:'type-sage', book:'原则', chapter:'工作原则', quote:'极度透明和极度求真是我见过的最有价值的两样东西，也是最难做到的两样东西。', insight:'💡 建立心理安全感的团队，成员才敢说真话。领导者需要先降低自己的防御性。', tag:'组织原则 · 透明文化' },
+  { type:'type-slate', book:'穷查理宝典', chapter:'格栅思维', quote:'拥有一把锤子的人，看什么都像钉子。你需要的不是更多工具，而是更多不同的工具。', insight:'💡 跨学科思维模型才是真正的竞争壁垒，单一领域的深度会制造认知盲区。', tag:'心智模型 · 跨学科' },
+  { type:'', book:'被讨厌的勇气', chapter:'第三夜', quote:'所谓自由，就是被别人讨厌。如果你没有被任何人讨厌，那意味着你没有真正活过。', insight:'💡 寻求所有人认可是一种隐性的控制欲。课题分离——你的反应是你的课题，不是我的。', tag:'阿德勒心理 · 课题分离' },
+  { type:'type-rust', book:'人类简史', chapter:'认知革命', quote:'历史上最危险的东西，不是炸弹和枪炮，而是被数十亿人共同相信的故事。', insight:'💡 货币、国家、公司都是共同的虚构——理解这一点，你才能真正理解权力如何运作。', tag:'历史规律 · 集体想象' },
+];
+
+let currentDailyIdx = 0;
+let checkinDone = false;
+
+// ── RENDER BOOKS ──
+function renderBooks() {
+  const grid = document.getElementById('bookGrid');
+  grid.innerHTML = BOOKS.map((b,i) => `
+    <div class="book-card" style="animation-delay:${i*0.07}s" onclick="openModal('${b.id}')">
+      <div class="book-spine" style="background:${b.color}">
+        <span class="book-tag">${b.tag}</span>
+        <div class="book-info">
+          <div class="book-title">${b.title}</div>
+          <div class="book-author">${b.author}</div>
+        </div>
+      </div>
+      <div class="book-progress">
+        <div class="book-progress-fill" style="width:${b.progress}%"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── RENDER CANVAS ──
+function renderCanvas(bookId) {
+  const data = CANVASES[bookId] || CANVASES['book1'];
+  const tabs = document.getElementById('canvasTabs');
+  const body = document.getElementById('canvasBody');
+
+  tabs.innerHTML = Object.keys(CANVASES).map(id => {
+    const b = BOOKS.find(bk => bk.id === id);
+    return `<div class="canvas-tab${id===bookId?' active':''}" onclick="renderCanvas('${id}')">${b ? b.title : id}</div>`;
+  }).join('');
+
+  body.innerHTML = `
+    <div class="canvas-title">${data.title}</div>
+    <div class="canvas-subtitle">${data.subtitle}</div>
+    <div class="canvas-nodes">
+      <div class="canvas-center">
+        <span class="canvas-center-text">◆ ${data.center} ◆</span>
+      </div>
+      <div class="canvas-branches">
+        ${data.branches.map(br => `
+          <div class="branch-node" onclick="showToast('📌 已展开：${br.title}')">
+            <div class="branch-number">${br.num}</div>
+            <div class="branch-title">${br.title}</div>
+            <div class="branch-desc">${br.desc}</div>
+            <span class="branch-tag" style="background:${br.tagColor}22;color:${br.tagColor};border:1px solid ${br.tagColor}44">${br.tag}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ── RENDER DAILY ──
+function renderDaily(idx) {
+  const d = DAILY_INSIGHTS[idx];
+  document.getElementById('dailyQuote').textContent = d.quote;
+  document.getElementById('dailyBook').textContent = '《' + d.book + '》';
+  document.getElementById('dailyAuthor').textContent = '— ' + d.author;
+  const now = new Date();
+  document.getElementById('todayDate').textContent =
+    `${now.getMonth()+1}月${now.getDate()}日`;
+}
+
+function rotateDaily() {
+  currentDailyIdx = (currentDailyIdx + 1) % DAILY_INSIGHTS.length;
+  renderDaily(currentDailyIdx);
+}
+
+// ── MINI CALENDAR ──
+function renderMiniCal() {
+  const cal = document.getElementById('miniCal');
+  const today = new Date().getDate();
+  let html = '';
+  for(let i = 1; i <= 21; i++) {
+    const isToday = i === today;
+    const done = i < today && Math.random() > 0.25;
+    html += `<div class="cal-day${isToday?' today':done?' done':''}">${i}</div>`;
+  }
+  cal.innerHTML = html;
+}
+
+// ── CHECKIN ──
+function doCheckin() {
+  if(checkinDone) { showToast('✅ 今日已完成打卡！'); return; }
+  checkinDone = true;
+  const n = parseInt(document.getElementById('streakNum').textContent);
+  document.getElementById('streakNum').textContent = n + 1;
+  showToast('🔥 打卡成功！连续第 ' + (n+1) + ' 天');
+  renderMiniCal();
+}
+
+// ── RENDER CARDS ──
+function renderCards() {
+  const grid = document.getElementById('cardsGrid');
+  grid.innerHTML = CARDS.map((c, i) => `
+    <div class="cog-card ${c.type}" style="animation-delay:${i*0.1}s">
+      <div class="cog-card-accent"></div>
+      <div class="cog-card-body">
+        <div class="cog-card-source">
+          <span class="cog-card-book">《${c.book}》</span>
+          <span class="cog-card-chapter">${c.chapter}</span>
+        </div>
+        <p class="cog-card-quote">${c.quote}</p>
+        <div class="cog-card-insight">${c.insight}</div>
+      </div>
+      <div class="cog-card-footer">
+        <span class="cog-card-tag">${c.tag}</span>
+        <div class="cog-card-actions">
+          <button class="action-btn" onclick="toggleSave(this)" title="收藏">♡</button>
+          <button class="action-btn" onclick="shareCard(${i})" title="分享">⤴</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleSave(btn) {
+  btn.classList.toggle('saved');
+  btn.textContent = btn.classList.contains('saved') ? '♥' : '♡';
+  showToast(btn.classList.contains('saved') ? '❤️ 已加入收藏' : '移出收藏');
+}
+
+function shareCard(idx) {
+  const c = CARDS[idx];
+  showToast('📋 卡片已复制，可粘贴到小红书！');
+}
+
+// ── MODAL ──
+function openModal(bookId) {
+  const b = BOOKS.find(bk => bk.id === bookId);
+  const canvas = CANVASES[bookId];
+  if(!b) return;
+  const content = document.getElementById('modalContent');
+  content.innerHTML = `
+    <div class="modal-book-title">${b.title}</div>
+    <div class="modal-book-meta">${b.author} · ${b.tag} · 已读 ${b.progress}%</div>
+    ${canvas ? `
+      <ul class="modal-canvas-list">
+        ${canvas.branches.map((br,i) => `
+          <li class="modal-canvas-item" onclick="showToast('📖 打开画布节点：${br.title}')">
+            <span class="modal-canvas-num">${br.num}</span>
+            <div class="modal-canvas-text">
+              <h4>${br.title}</h4>
+              <p>${br.desc}</p>
+            </div>
+          </li>
+        `).join('')}
+      </ul>
+    ` : '<p style="color:#6e6048;font-size:0.85rem;padding:20px 0">该书籍的认知画布正在生成中…</p>'}
+    <div class="add-form">
+      <input class="form-input" placeholder="添加你的批注或思考…" />
+      <button class="btn-primary" onclick="showToast('💾 批注已保存')">保存</button>
+    </div>
+  `;
+  document.getElementById('modalOverlay').classList.add('open');
+  renderCanvas(bookId);
+}
+
+function closeModal(e, force) {
+  if(force || (e && e.target === document.getElementById('modalOverlay'))) {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function scrollToSection(id) {
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── INIT ──
+renderBooks();
+renderCanvas('book1');
+renderDaily(0);
+renderMiniCal();
+renderCards();
+</script>
+</body>
+</html>
